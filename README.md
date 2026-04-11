@@ -255,6 +255,19 @@ midnight-medic logs my-proof-server
 
 Midnight Medic achieves "X-ray vision" into the Compact compiler by reverse-engineering the ZKIR (Zero-Knowledge Intermediate Representation) format:
 
+```mermaid
+graph TD
+    A[".compact Source Code"] -->|compactc| B["ZKIR (JSON Architecture)"]
+    A -->|compactc| C["JavaScript SDK Assets"]
+    B -->|midnight-medic| D["Dependency Graph Engine"]
+    D -->|Instruction Analysis| E["profiler / optimizer"]
+    D -->|Heuristic Mapping| F["trace (Source correlation)"]
+    F -.->|Mapping Back| A
+    E --> G["Gate-Level Flamegraph"]
+```
+
+**How it works:**
+
 1. **ZKIR is JSON** - Unlike binary ZK formats (R1CS), Midnight's ZKIR is human-readable JSON
 2. **Instruction Mapping** - Each opcode (`persistent_hash`, `cond_select`, `assert`) maps to cryptographic gates
 3. **Dependency Graphs** - Build slot dependency trees to trace data flow through circuits
