@@ -90,6 +90,8 @@ Auto-resolves SDK & Docker mismatches blocking new builders. Onboarding friction
 
 ## 🚀 Installation
 
+📦 **NPM Package**: [https://www.npmjs.com/package/midnight-medic](https://www.npmjs.com/package/midnight-medic)
+
 ```bash
 npm install -g midnight-medic
 # or run without installing:
