@@ -1,6 +1,6 @@
 # midnight-medic
 
-Environment diagnostics, version sync, and Compact linting for Midnight Network developers.
+Environment diagnostics, advanced ZK analysis, and state observability for Midnight Network developers.
 
 ## Installation
 
@@ -12,104 +12,86 @@ npx midnight-medic doctor
 
 ## Commands
 
-### `midnight-medic doctor`
+### Environment & Diagnostics
 
-Runs a full local environment scan before you start your DApp.
+#### `midnight-medic doctor`
 
-Checks: Docker daemon, port conflicts (6300, 8088, 9944), Preprod/Preview Indexer connectivity, Proof Server health, and your wallet balance.
+Runs a full local environment scan before you start your DApp. Checks: Docker daemon, port conflicts, Indexer connectivity, Proof Server health, and wallet balances. Use `--export` for a Discord-friendly Markdown report.
 
 ```
 midnight-medic doctor
 ```
 
-Use `--export` to copy a Markdown-formatted report to your clipboard (perfect for Discord support threads):
+#### `midnight-medic sync`
 
-```
-midnight-medic doctor --export
-```
-
-```
-Midnight Doctor — running environment scan...
-
-  Docker
-  [✓] Daemon: Running (v27.0.3)
-
-  Ports
-  [x] 6300 (proofServer): Occupied by 'node' (pid 14221)
-      --> kill -9 14221  (or: docker stop <container-name>)
-  [✓] 8088 (indexer): Available
-  [✓] 9944 (node): Available
-
-  Network
-  [✓] Preprod Indexer: Reachable (https://indexer.preprod...)
-  [!] Preview Indexer: Timeout (>4000ms)
-
-  Proof Server
-  [✓] Proof Server (localhost:6300): Healthy (v8.0.3)
-
-  Wallet
-  [!] Wallet (WALLET_SEED): mn_addr_preprod1jj9q... has 0 tNight
-      --> Visit: https://faucet.preprod.midnight.network to fund your wallet
-
-  ------------------------------------------------------------
-  Result: 1 error, 2 warnings.
-```
-
----
-
-### `midnight-medic sync`
-
-Detects version mismatches between your `@midnight-ntwrk/ledger-vX` SDK and your Docker Compose proof-server image.
-
-```
-midnight-medic sync
-```
-
-Add `--fix` to automatically update your YAML files:
+Detects version mismatches between your `@midnight-ntwrk/ledger-vX` SDK and your Docker Compose proof-server image. Use `--fix` to auto-resolve.
 
 ```
 midnight-medic sync --fix
 ```
 
-```
-Midnight Sync — checking version compatibility...
+#### `midnight-medic lint [path]`
 
-  Detected Packages
-  [✓] @midnight-ntwrk/ledger-v8: 8.0.3
-  [✓] Expected Proof Server: midnightntwrk/proof-server:8.0.3
-  [✓] Expected SDK: ^4.0.4
-  [✓] Expected Compiler: 0.30.0
-
-  Docker Compose Files
-  [x] proof-server.yml: Found 'midnightntwrk/proof-server:8.0.2', expected '...8.0.3'
-      --> Run: midnight-medic sync --fix to update proof-server.yml
-
-  ------------------------------------------------------------
-  Result: 1 issue found. Run with --fix to apply.
-```
-
----
-
-### `midnight-medic lint [path]`
-
-Statically analyzes your `.compact` files for common pre-compilation errors.
+Statically analyzes your `.compact` files for common pre-compilation errors (e.g., missing `.disclose()`, pragma checks).
 
 ```
 midnight-medic lint ./contract/src
 ```
 
+---
+
+### Advanced ZK Analysis (ZKIR)
+
+#### `midnight-medic estimate [circuit-name]`
+
+Calculates estimated DUST costs by deeply parsing compiled `.zkir` circuits. Breaks down base fees, circuit complexity, public transversals, and ledger storage.
+
 ```
-Midnight Lint — scanning Compact contracts...
-  (Note: Static pattern-matching. Always defer to the Compact compiler.)
+midnight-medic estimate castPrivateVote
+```
 
-  game.compact
-  [✓] Pragma: Valid version directive found
-  [!] Line 42: 'playerKey' used in ledger assignment — may need .disclose()
-      --> Consider: ledger.field = disclose(playerKey)
-  [!] Line 88: Constructor declares 2 arg(s): [creator, maxPlayers] — ensure api.ts passes 'args: [...]'
+#### `midnight-medic optimize`
 
-  ------------------------------------------------------------
-  Result: 2 warnings.
+Scans all compiled `.zkir` files for redundant gates and optimization opportunities. Detects duplicate hashes, deep conditional branches, and excessive witness bloat, giving you actionable refactoring suggestions for your `.compact` files.
+
+```
+midnight-medic optimize
+```
+
+#### `midnight-medic profile`
+
+Analyzes circuit weights by reverse-engineering ZKIR operation nodes. Outputs a visual flamegraph highlighting the heaviest mathematical operations and estimates proof generation time on local hardware.
+
+```
+midnight-medic profile
+```
+
+#### `midnight-medic trace [--circuit <name>]`
+
+Tracks down cryptic ZK proof failures (like constraint violations or timeouts) by mapping runtime errors directly to your ZKIR graph and original `.compact` source code. Supports post-mortem static analysis or live Docker log monitoring.
+
+```
+midnight-medic trace
+```
+
+---
+
+### State & Observability
+
+#### `midnight-medic inspect [--db <path>]`
+
+Decrypts and safely explores your local LevelDB private state store. Automatically locates your `.env` for the `WALLET_SEED`, resolves SDK paths, and prints your local DB in a structured, readable terminal tree.
+
+```
+midnight-medic inspect
+```
+
+#### `midnight-medic logs [container-name]`
+
+Streams Proof Server logs but actually makes them readable. Filters out the noise, formats errors cleanly, and translates complex provers panics into human-readable action items.
+
+```
+midnight-medic logs
 ```
 
 ## Compatibility Matrix
