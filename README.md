@@ -190,29 +190,137 @@ Deep-analyzes a specific circuit's ZKIR without a live Docker session.
 
 ### State & Observability
 
-#### `midnight-medic inspect [--db <path>]`
+#### `midnight-medic inspect`
 
-Decrypts and safely explores your local LevelDB private state store. Automatically locates your `.env` for the `WALLET_SEED`, resolves SDK paths, and prints your local DB in a structured, readable terminal tree.
+Decrypts and explores your local LevelDB private state store. Automatically locates your `.env` for the `WALLET_SEED`, dynamically imports the Midnight SDK from your project's `node_modules`, and prints your decrypted private state in a structured, readable terminal tree.
 
-```
+**Options:**
+- `--db <path>` - Path to LevelDB directory (auto-detected if not specified)
+- `--cwd <path>` - Working directory to search for .env and db/ (default: current directory)
+
+```bash
 midnight-medic inspect
+midnight-medic inspect --db ./private-state
 ```
+
+**How it works:**
+1. Reads `WALLET_SEED` from `.env` in your project
+2. Auto-detects LevelDB directory (searches: `db/`, `private-state/`, `.private-state/`, `state/`, `data/private`)
+3. Dynamically imports `@midnight-ntwrk/midnight-js-level-private-state-provider` from your local `node_modules`
+4. Decrypts the state using your wallet seed
+5. Pretty-prints the state as an indented tree with type annotations
+
+**Output includes:**
+- Nested object structure with color-coded keys
+- Arrays with item counts and previews
+- BigInt values with type labels
+- Truncated long hex strings for readability
+- Fallback to raw directory listing if SDK not available
 
 #### `midnight-medic logs [container-name]`
 
-Streams Proof Server logs but actually makes them readable. Filters out the noise, formats errors cleanly, and translates complex provers panics into human-readable action items.
+Streams Proof Server Docker logs with intelligent error detection and formatting. Translates cryptic ZK prover panics into human-readable action items.
 
-```
+**Auto-detection:**
+- Automatically finds running proof-server containers if name not specified
+- Searches for containers with "proof-server", "prover", or "midnight-proof" in name/image
+
+```bash
 midnight-medic logs
+midnight-medic logs my-proof-server
 ```
 
-## Compatibility Matrix
+**Error Pattern Detection:**
+- **Public Transcript Mismatch** - Data doesn't match circuit expectations → recompile
+- **Constraint Failure** - Assert violated → run `midnight-medic lint` or `trace`
+- **Proof Generation Failed** - Invalid witness values → check witness functions
+- **Missing ZK Artifacts** - ZKIR/prover key not found → recompile contracts
+- **Timeout** - Proof took too long → wait for ZK params download
+- **Out of Memory** - Increase Docker memory allocation (recommend 8GB+)
+- **ZK Parameters Loading** - Normal first startup (downloading proving keys)
+- **Proof Server Ready** - Server is up and accepting requests
 
-| Ledger | Proof Server | SDK | Compiler |
-| :--- | :--- | :--- | :--- |
-| 8.0.3 | midnightntwrk/proof-server:8.0.3 | ^4.0.4 | 0.30.0 |
-| 8.0.2 | midnightntwrk/proof-server:8.0.2 | ^4.0.3 | 0.29.0 |
-| 7.1.0 | midnightntwrk/proof-server:7.1.0 | ^3.1.0 | 0.22.0 |
+**Output:**
+- Color-coded error boxes for critical failures (red background)
+- Warnings in yellow with explanations
+- Info messages dimmed for readability
+- Raw log line included for debugging
+- Suggested fixes for each error type
+
+---
+
+## How It Works
+
+### ZKIR Reverse Engineering
+
+Midnight Medic achieves "X-ray vision" into the Compact compiler by reverse-engineering the ZKIR (Zero-Knowledge Intermediate Representation) format:
+
+1. **ZKIR is JSON** - Unlike binary ZK formats (R1CS), Midnight's ZKIR is human-readable JSON
+2. **Instruction Mapping** - Each opcode (`persistent_hash`, `cond_select`, `assert`) maps to cryptographic gates
+3. **Dependency Graphs** - Build slot dependency trees to trace data flow through circuits
+4. **Heuristic Source Mapping** - Correlate ZKIR instructions back to `.compact` source via:
+   - Instruction sequencing (compiler emits in predictable order)
+   - Anchor points (public input names, constants)
+   - Proxy trace through generated JavaScript (which has source maps)
+
+See `arch.md` and `framing.md` for the full technical deep-dive.
+
+---
+
+## Features
+
+✅ **Environment Diagnostics**
+- Docker daemon health check
+- Port conflict detection (6300, 8088, 9944)
+- Network connectivity validation (preprod/preview)
+- Wallet balance checking via indexer queries
+
+✅ **Version Management**
+- SDK/Docker compatibility validation
+- Auto-fix for version mismatches
+- Official compatibility matrix tracking
+
+✅ **Static Analysis**
+- Compact linting (pragma, disclose, constructors)
+- Pre-compilation error detection
+
+✅ **ZK Circuit Analysis**
+- DUST cost estimation with breakdown
+- Gate weight profiling with flamegraphs
+- Optimization opportunity detection
+- Proof time estimation
+
+✅ **Debugging & Observability**
+- Live proof failure monitoring
+- ZKIR-to-source trace mapping
+- Private state decryption
+- Intelligent log parsing
+
+---
+
+## Requirements
+
+- Node.js 18+ (ESM support)
+- Docker (for proof server checks)
+- Midnight SDK in your project's `node_modules` (for inspect command)
+
+---
+
+## Development
+
+```bash
+# Install dependencies
+npm install
+
+# Build
+npm run build
+
+# Run locally
+npm run dev doctor
+
+# Type check
+npm run lint
+```
 
 ## License
 
