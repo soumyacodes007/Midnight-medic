@@ -9,7 +9,9 @@
   "scripts": {
     "build": "tsup src/index.ts --format esm --out-dir dist --dts",
     "dev": "tsx src/index.ts",
-    "lint": "tsc --noEmit"
+    "lint": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "keywords": [
     "midnight",
@@ -33,6 +35,7 @@
     "@types/node": "^20.0.0",
     "tsup": "^8.0.2",
     "tsx": "^4.7.1",
-    "typescript": "^5.4.0"
+    "typescript": "^5.4.0",
+    "vitest": "^2.1.0"
   }
 }
