@@ -20,11 +20,44 @@ async function findCompactFiles(dir: string): Promise<string[]> {
   });
 }
 
-export async function runLint(targetDir: string): Promise<void> {
+export interface LintOptions {
+  json?: boolean;
+}
+
+interface FileReport {
+  file: string;
+  issues: LintIssue[];
+}
+
+function lintFile(filePath: string, relPath: string): FileReport {
+  const lines = fs.readFileSync(filePath, 'utf-8').split('\n');
+  const issues: LintIssue[] = [];
+
+  const pragmaIssue = checkPragma(lines, relPath);
+  if (pragmaIssue) issues.push(pragmaIssue);
+  issues.push(...checkDisclosures(lines, relPath));
+  issues.push(...checkAssertMessages(lines, relPath));
+  const constructorIssue = extractConstructorArgs(lines, relPath);
+  if (constructorIssue) issues.push(constructorIssue);
+
+  return { file: relPath, issues };
+}
+
+export async function runLint(targetDir: string, options: LintOptions = {}): Promise<void> {
+  const files = await findCompactFiles(targetDir);
+  const reports = files.map((filePath) => lintFile(filePath, path.relative(targetDir, filePath)));
+
+  const allIssues = reports.flatMap((r) => r.issues);
+  const totalErrors = allIssues.filter((i) => i.severity === 'error').length;
+  const totalWarnings = allIssues.length - totalErrors;
+
+  if (options.json) {
+    console.log(JSON.stringify({ files: reports, errors: totalErrors, warnings: totalWarnings }, null, 2));
+    return;
+  }
+
   header('Midnight Lint — scanning Compact contracts...');
   console.log(chalk.dim('  (Note: Static pattern-matching. Always defer to the Compact compiler.)\n'));
-
-  const files = await findCompactFiles(targetDir);
 
   if (files.length === 0) {
     info('No .compact files found', `Searched in: ${targetDir}`);
@@ -32,43 +65,22 @@ export async function runLint(targetDir: string): Promise<void> {
     return;
   }
 
-  let totalErrors = 0;
-  let totalWarnings = 0;
+  for (const report of reports) {
+    section(report.file);
 
-  for (const filePath of files) {
-    const relPath = path.relative(targetDir, filePath);
-    section(relPath);
+    if (!report.issues.some((i) => i.message.includes('ragma'))) {
+      ok('Pragma', 'Valid version directive found');
+    }
 
-    const content = fs.readFileSync(filePath, 'utf-8');
-    const lines = content.split('\n');
-    const issues: LintIssue[] = [];
-
-    // Run all checks
-    const pragmaIssue = checkPragma(lines, relPath);
-    if (pragmaIssue) issues.push(pragmaIssue);
-    else ok('Pragma', 'Valid version directive found');
-
-    const disclosureIssues = checkDisclosures(lines, relPath);
-    issues.push(...disclosureIssues);
-
-    issues.push(...checkAssertMessages(lines, relPath));
-
-    const constructorIssue = extractConstructorArgs(lines, relPath);
-    if (constructorIssue) issues.push(constructorIssue);
-
-    if (issues.length === 0) {
+    if (report.issues.length === 0) {
       ok('No issues found');
-    } else {
-      for (const issue of issues) {
-        const loc = `Line ${issue.line}`;
-        if (issue.severity === 'error') {
-          fail(loc, issue.message, issue.fix);
-          totalErrors++;
-        } else {
-          warn(loc, issue.message, issue.fix);
-          totalWarnings++;
-        }
-      }
+      continue;
+    }
+
+    for (const issue of report.issues) {
+      const loc = `Line ${issue.line}`;
+      if (issue.severity === 'error') fail(loc, issue.message, issue.fix);
+      else warn(loc, issue.message, issue.fix);
     }
   }
 
