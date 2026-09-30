@@ -4,6 +4,7 @@ import { glob } from 'glob';
 import yaml from 'js-yaml';
 import { header, section, ok, fail, warn, info, divider } from '../ui/output.js';
 import { COMPAT_MATRIX, findCompatEntry } from '../compat/matrix.js';
+import { cleanVersion } from '../utils/semver.js';
 import chalk from 'chalk';
 
 interface PackageJson {
@@ -16,7 +17,7 @@ function detectLedgerVersion(pkgJson: PackageJson): { packageName: string; versi
   const allDeps = { ...pkgJson.dependencies, ...pkgJson.devDependencies };
   for (const [name, version] of Object.entries(allDeps)) {
     if (name.match(/^@midnight-ntwrk\/ledger-v\d+$/)) {
-      return { packageName: name, version: version.replace(/^\^|~/, '') };
+      return { packageName: name, version: cleanVersion(version) };
     }
   }
   return undefined;

@@ -1,3 +1,5 @@
+import { cleanVersion, compareVersions } from '../utils/semver.js';
+
 export interface CompatEntry {
   ledgerVersion: string;
   proofServerImage: string;
@@ -51,5 +53,16 @@ export const NETWORK_URLS = {
 } as const;
 
 export function findCompatEntry(ledgerVersion: string): CompatEntry | undefined {
-  return COMPAT_MATRIX.find((e) => e.ledgerVersion === ledgerVersion);
+  const version = cleanVersion(ledgerVersion);
+  return COMPAT_MATRIX.find((e) => e.ledgerVersion === version);
+}
+
+/** The newest entry in the compatibility matrix. */
+export function latestCompatEntry(): CompatEntry {
+  return [...COMPAT_MATRIX].sort((a, b) => compareVersions(b.ledgerVersion, a.ledgerVersion))[0]!;
+}
+
+/** Find the matrix entry that pins a given proof-server image tag. */
+export function findCompatEntryByImage(image: string): CompatEntry | undefined {
+  return COMPAT_MATRIX.find((e) => e.proofServerImage === image.trim());
 }
