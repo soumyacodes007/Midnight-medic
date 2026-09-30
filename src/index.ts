@@ -44,9 +44,10 @@ program
   .command('lint [path]')
   .description('Statically analyze .compact files for common errors and anti-patterns.')
   .option('--json', 'Output lint results as JSON.')
-  .action(async (targetPath: string | undefined, options: { json: boolean }) => {
+  .option('--strict', 'Exit with a non-zero code when any warnings are found.')
+  .action(async (targetPath: string | undefined, options: { json: boolean; strict: boolean }) => {
     const dir = targetPath ?? process.cwd();
-    await runLint(dir, { json: options.json ?? false });
+    await runLint(dir, { json: options.json ?? false, strict: options.strict ?? false });
   });
 
 // ── inspect ──────────────────────────────────────────────────────────────────

@@ -22,6 +22,8 @@ async function findCompactFiles(dir: string): Promise<string[]> {
 
 export interface LintOptions {
   json?: boolean;
+  /** Treat warnings as failures (non-zero exit code). Useful in CI. */
+  strict?: boolean;
 }
 
 interface FileReport {
@@ -50,6 +52,10 @@ export async function runLint(targetDir: string, options: LintOptions = {}): Pro
   const allIssues = reports.flatMap((r) => r.issues);
   const totalErrors = allIssues.filter((i) => i.severity === 'error').length;
   const totalWarnings = allIssues.length - totalErrors;
+
+  if (totalErrors > 0 || (options.strict && totalWarnings > 0)) {
+    process.exitCode = 1;
+  }
 
   if (options.json) {
     console.log(JSON.stringify({ files: reports, errors: totalErrors, warnings: totalWarnings }, null, 2));
