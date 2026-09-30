@@ -2,23 +2,7 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import type { CheckResult } from '../ui/output.js';
 import { NETWORK_URLS } from '../compat/matrix.js';
-
-/** Read WALLET_SEED from a .env file in the given directory. */
-function readWalletSeedFromEnv(cwd: string): string | undefined {
-  const envPath = path.join(cwd, '.env');
-  if (!fs.existsSync(envPath)) return undefined;
-
-  const content = fs.readFileSync(envPath, 'utf-8');
-  for (const line of content.split('\n')) {
-    const trimmed = line.trim();
-    if (trimmed.startsWith('#') || !trimmed.includes('=')) continue;
-    const [key, ...valueParts] = trimmed.split('=');
-    if (key?.trim() === 'WALLET_SEED') {
-      return valueParts.join('=').trim().replace(/^['"]|['"]$/g, '');
-    }
-  }
-  return undefined;
-}
+import { readWalletSeedFromEnv } from '../utils/env.js';
 
 /**
  * Query the Preprod Indexer for the tNight (unshielded) balance of a given address.
