@@ -9,6 +9,7 @@ import { runProfile } from './commands/profile.js';
 import { runTrace } from './commands/trace.js';
 import { runOptimize } from './commands/optimize.js';
 import { runEstimate } from './commands/estimate.js';
+import { runMatrix } from './commands/matrix.js';
 
 import chalk from 'chalk';
 
@@ -37,6 +38,15 @@ program
   .option('--cwd <path>', 'Working directory to scan (default: current directory)', process.cwd())
   .action(async (options: { fix: boolean; cwd: string }) => {
     await runSync({ fix: options.fix ?? false, cwd: options.cwd });
+  });
+
+// ── matrix ───────────────────────────────────────────────────────────────────
+program
+  .command('matrix')
+  .description('Print the Midnight ledger / proof-server / SDK / compiler compatibility matrix.')
+  .option('--json', 'Output the matrix as JSON.')
+  .action((options: { json: boolean }) => {
+    runMatrix({ json: options.json ?? false });
   });
 
 // ── lint ─────────────────────────────────────────────────────────────────────
@@ -117,6 +127,7 @@ if (process.argv.length === 2) {
   console.log(`  ${chalk.cyan('midnight-medic doctor --export')}     Copy report to clipboard for Discord`);
   console.log(`  ${chalk.cyan('midnight-medic sync')}                Check SDK/Docker version compatibility`);
   console.log(`  ${chalk.cyan('midnight-medic sync --fix')}          Auto-fix version mismatches`);
+  console.log(`  ${chalk.cyan('midnight-medic matrix')}              Print the version compatibility matrix`);
   console.log(`  ${chalk.cyan('midnight-medic lint [path]')}         Lint .compact files for anti-patterns`);
   console.log(`  ${chalk.cyan('midnight-medic inspect')}             Decrypt and view local private state`);
   console.log(`  ${chalk.cyan('midnight-medic inspect --db <dir>')}  Inspect a specific LevelDB directory`);
