@@ -22,3 +22,9 @@ describe('checkAssertMessages', () => {
     expect(checkAssertMessages(lines('reassert(x);'), 'a.compact')).toHaveLength(0);
   });
 });
+
+describe('rule ids', () => {
+  it('tags assert issues with their rule id', () => {
+    expect(checkAssertMessages(lines('assert(x);'), 'a.compact')[0]?.rule).toBe('assert-message');
+  });
+});

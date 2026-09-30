@@ -1,4 +1,7 @@
+export type LintRule = 'pragma' | 'disclose' | 'assert-message' | 'constructor-args';
+
 export interface LintIssue {
+  rule: LintRule;
   file: string;
   line: number;
   severity: 'error' | 'warn';
@@ -17,6 +20,7 @@ export function checkPragma(lines: string[], file: string): LintIssue | null {
       const [major, minor] = numericVersion.split('.').map(Number);
       if ((minor ?? 0) < 20 && (major ?? 0) === 0) {
         return {
+          rule: 'pragma',
           file,
           line: i + 1,
           severity: 'warn',
@@ -28,6 +32,7 @@ export function checkPragma(lines: string[], file: string): LintIssue | null {
     }
   }
   return {
+    rule: 'pragma',
     file,
     line: 1,
     severity: 'warn',
@@ -58,6 +63,7 @@ export function checkDisclosures(lines: string[], file: string): LintIssue[] {
       const contextLines = lines.slice(Math.max(0, i - 5), i).join('\n');
       if (contextLines.includes('witness') || contextLines.includes('private')) {
         issues.push({
+          rule: 'disclose',
           file,
           line: i + 1,
           severity: 'warn',
@@ -73,6 +79,7 @@ export function checkDisclosures(lines: string[], file: string): LintIssue[] {
       const contextLines = lines.slice(Math.max(0, i - 3), i).join('\n');
       if (contextLines.includes('witness') || contextLines.includes('private') || line.includes('ledger')) {
         issues.push({
+          rule: 'disclose',
           file,
           line: i + 1,
           severity: 'warn',
@@ -99,6 +106,7 @@ export function extractConstructorArgs(lines: string[], file: string): LintIssue
 
       if (args.length > 0) {
         return {
+          rule: 'constructor-args',
           file,
           line: i + 1,
           severity: 'warn',
@@ -123,6 +131,7 @@ export function checkAssertMessages(lines: string[], file: string): LintIssue[] 
     // A single-line assert with a message always contains a string literal.
     if (/\)\s*;/.test(line) && !/["']/.test(line)) {
       issues.push({
+        rule: 'assert-message',
         file,
         line: i + 1,
         severity: 'warn',

@@ -68,7 +68,7 @@ export async function runLint(targetDir: string, options: LintOptions = {}): Pro
   for (const report of reports) {
     section(report.file);
 
-    if (!report.issues.some((i) => i.message.includes('ragma'))) {
+    if (!report.issues.some((i) => i.rule === 'pragma')) {
       ok('Pragma', 'Valid version directive found');
     }
 
