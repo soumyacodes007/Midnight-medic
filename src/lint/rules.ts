@@ -110,3 +110,27 @@ export function extractConstructorArgs(lines: string[], file: string): LintIssue
   }
   return null;
 }
+
+/** Detect assert() calls without a failure message — these surface as opaque proof failures. */
+export function checkAssertMessages(lines: string[], file: string): LintIssue[] {
+  const issues: LintIssue[] = [];
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i] ?? '';
+    if (line.trim().startsWith('//')) continue;
+    if (!/\bassert\s*\(/.test(line)) continue;
+
+    // A single-line assert with a message always contains a string literal.
+    if (/\)\s*;/.test(line) && !/["']/.test(line)) {
+      issues.push({
+        file,
+        line: i + 1,
+        severity: 'warn',
+        message: 'assert() has no failure message',
+        fix: 'Add a message: assert(condition, "why this must hold")',
+      });
+    }
+  }
+
+  return issues;
+}

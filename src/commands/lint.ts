@@ -3,7 +3,13 @@ import * as path from 'node:path';
 import { glob } from 'glob';
 import chalk from 'chalk';
 import { header, section, ok, fail, warn, info, divider } from '../ui/output.js';
-import { checkPragma, checkDisclosures, extractConstructorArgs, type LintIssue } from '../lint/rules.js';
+import {
+  checkPragma,
+  checkDisclosures,
+  checkAssertMessages,
+  extractConstructorArgs,
+  type LintIssue,
+} from '../lint/rules.js';
 
 /** Find all .compact files. */
 async function findCompactFiles(dir: string): Promise<string[]> {
@@ -44,6 +50,8 @@ export async function runLint(targetDir: string): Promise<void> {
 
     const disclosureIssues = checkDisclosures(lines, relPath);
     issues.push(...disclosureIssues);
+
+    issues.push(...checkAssertMessages(lines, relPath));
 
     const constructorIssue = extractConstructorArgs(lines, relPath);
     if (constructorIssue) issues.push(constructorIssue);
