@@ -1,7 +1,15 @@
 import type { CheckResult } from '../ui/output.js';
 import { NETWORK_URLS } from '../compat/matrix.js';
 
-const TIMEOUT_MS = 4000;
+const DEFAULT_TIMEOUT_MS = 4000;
+
+/** Resolve the network timeout, overridable via MEDIC_TIMEOUT_MS for slow connections. */
+export function resolveTimeout(raw: string | undefined = process.env.MEDIC_TIMEOUT_MS): number {
+  const parsed = Number(raw);
+  return Number.isFinite(parsed) && parsed > 0 ? Math.floor(parsed) : DEFAULT_TIMEOUT_MS;
+}
+
+const TIMEOUT_MS = resolveTimeout();
 
 /** Fetch with a configurable timeout via AbortController. */
 async function fetchWithTimeout(url: string, options: RequestInit = {}): Promise<Response> {
