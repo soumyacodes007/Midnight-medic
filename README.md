@@ -142,19 +142,50 @@ midnight-medic sync --fix
 | 8.0.2 | midnightntwrk/proof-server:8.0.2 | ^4.0.3 | 0.29.0 |
 | 7.1.0 | midnightntwrk/proof-server:7.1.0 | ^3.1.0 | 0.22.0 |
 
+#### `midnight-medic matrix`
+
+Prints the compatibility matrix above straight from the CLI, highlighting the latest supported ledger version.
+
+**Options:**
+- `--json` - Output the matrix as JSON
+
+```bash
+midnight-medic matrix
+midnight-medic matrix --json
+```
+
+#### `midnight-medic ports`
+
+Quick check of the three ports the local Midnight stack needs (proof server 6300, indexer 8088, node 9944). If a port is taken, shows the owning process on macOS, Linux, and Windows. Exits non-zero when any port is occupied.
+
+**Options:**
+- `--json` - Output port status as JSON
+
+```bash
+midnight-medic ports
+```
+
 #### `midnight-medic lint [path]`
 
 Statically analyzes your `.compact` files for common pre-compilation errors and anti-patterns.
 
 **What it detects:**
-- Missing or outdated pragma directives
-- Variables used in ledger operations without `.disclose()`
-- Constructor arguments that need to be passed in `deployContract()`
-- Private variables in increment operations without disclosure
+
+| Rule id | Description |
+| :--- | :--- |
+| `pragma` | Missing or outdated pragma directives |
+| `disclose` | Private values used in ledger assignments or increments without `.disclose()` |
+| `assert-message` | `assert()` calls without a failure message |
+| `constructor-args` | Constructor arguments that need to be passed in `deployContract()` |
+
+**Options:**
+- `--json` - Output results as JSON (each issue includes its `rule` id)
+- `--strict` - Exit non-zero when any warnings are found (errors always exit non-zero)
 
 ```bash
 midnight-medic lint
 midnight-medic lint ./contract/src
+midnight-medic lint --strict --json
 ```
 
 ---
@@ -448,7 +479,15 @@ npm run dev doctor
 
 # Type check
 npm run lint
+
+# Unit tests
+npm test
 ```
+
+**Environment variables:**
+- `MEDIC_TIMEOUT_MS` - Override the network request timeout used by `doctor` (default: 4000)
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for the project layout and how to add lint rules, and [CHANGELOG.md](./CHANGELOG.md) for recent changes.
 
 ---
 
