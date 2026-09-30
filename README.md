@@ -1,4 +1,4 @@
-# 🩺 midnight-medic
+# midnight-medic
 
 <div align="center">
 
@@ -15,82 +15,82 @@
 
 ---
 
-## 🚨 The Problem
+## The Problem
 
 Building on Midnight Network is powerful — but the developer experience hits a wall at the compiler boundary:
 
-### 🔥 **Black Box Proof Servers**
+### Black Box Proof Servers
 Proof servers crash with cryptic errors like `Constraint failed at index 482` — developers left blind with no way to map failures back to source code.
 
-### 💸 **Unpredictable Tokenomics**
+### Unpredictable Tokenomics
 No way to estimate DUST fees before deployment. Developers guess costs, draining wallets just to test basic transactions.
 
-### 👁️ **Invisible State**
+### Invisible State
 Can't `console.log()` private data on localhost. LevelDB stores are encrypted — impossible to debug state without complex SDK gymnastics.
 
-### ⚙️ **Friction-Heavy Setup**
+### Friction-Heavy Setup
 Hours lost to SDK version mismatches, Docker image incompatibilities, and port conflicts. New builders abandon projects before writing a single circuit.
 
 ---
 
-## ✨ Our Solution
+## Our Solution
 
 **Midnight Medic** is the first diagnostic and observability toolkit purpose-built for Midnight Network developers.
 
-### 🔬 **The Decompiler**
+### The Decompiler
 Reverse-engineers ZKIR (Zero-Knowledge Intermediate Representation) to map ZK proof failures directly to your `.compact` source code. No more blind debugging.
 
-### 💰 **Cost Predictor**
+### Cost Predictor
 Analyzes compiled circuits to predict DUST fees **before** deployment. See the breakdown: base fees, circuit complexity, public transcript costs, and storage.
 
-### 🔍 **State X-Ray**
+### State X-Ray
 Decrypts your local LevelDB private state store instantly. View nested objects, arrays, and BigInts in a readable terminal tree — no SDK boilerplate required.
 
-### 🩹 **Auto-Doctor**
+### Auto-Doctor
 Scans your environment for Docker daemon issues, port conflicts, SDK/proof-server version mismatches, and wallet balances. Auto-fixes with `--fix` flag.
 
 ---
 
-## 🌟 Ecosystem Impact
+## Ecosystem Impact
 
 **Why Midnight Medic is the Ultimate Catalyst for Midnight**
 
-### 🧩 **Unlocking Compact**
+### Unlocking Compact
 Native debugging for complex privacy contracts. Developers can finally build confidently without fear of opaque failures.
 
-### 🔓 **Decoding the Proof Server**
+### Decoding the Proof Server
 Reduces debugging time from **4 hours → 4 minutes**. Translates ZKIR panics into line-number errors with source hints.
 
-### 📊 **Mastering Tokenomics**
+### Mastering Tokenomics
 Visually estimate DUST fees locally before touching the network. Optimize circuits to reduce costs by 30-50%.
 
-### 🛠️ **Rescuing the Local Stack**
+### Rescuing the Local Stack
 Auto-resolves SDK & Docker mismatches blocking new builders. Onboarding friction drops from hours to minutes.
 
 ---
 
-## 🎯 Features
+## Features
 
-### 🩺 **Environment Diagnostics**
+### Environment Diagnostics
 - `doctor` — Full environment scan: Docker, ports, network, proof server, wallet balance
 - `sync` — Detects and auto-fixes SDK/Docker version mismatches
 - `lint` — Static analysis for `.compact` files (missing `.disclose()`, pragma checks)
 
-### 🔬 **Advanced ZK Analysis (ZKIR)**
+### Advanced ZK Analysis (ZKIR)
 - `estimate` — Pre-flight DUST cost calculator with detailed breakdown
 - `optimize` — Scans circuits for redundant gates, duplicate hashes, witness bloat
 - `profile` — Gate-level flamegraph showing heaviest operations and proof times
 - `trace` — Live proof failure monitor with ZKIR-to-source mapping
 
-### 👁️ **State & Observability**
+### State & Observability
 - `inspect` — Decrypts and displays local LevelDB private state
 - `logs` — Intelligent proof server log parsing with error pattern detection
 
 ---
 
-## 🚀 Installation
+## Installation
 
-📦 **NPM Package**: [https://www.npmjs.com/package/midnight-medic](https://www.npmjs.com/package/midnight-medic)
+**NPM Package**: [https://www.npmjs.com/package/midnight-medic](https://www.npmjs.com/package/midnight-medic)
 
 ```bash
 npm install -g midnight-medic
@@ -337,25 +337,25 @@ midnight-medic logs my-proof-server
 
 ---
 
-## 🗺️ Roadmap
+## Roadmap
 
-### Phase 1 — The Editor 📝
+### Phase 1 — The Editor
 **VS Code Extension**: Compact syntax highlighting, inline DUST cost warnings, and real-time linting.
 
-### Phase 2 — The Pipeline 🔄
+### Phase 2 — The Pipeline
 **GitHub Actions**: ZK-firewall for CI/CD — trace and lint PRs before they hit the proof server. Block inefficient circuits automatically.
 
-### Phase 3 — The Cloud ☁️
+### Phase 3 — The Cloud
 **Cloud Profiling Dashboard**: Institutional-grade circuit monitoring, auditing, and cost analytics for production DApps.
 
 ---
 
-## 💼 Business Model
+## Business Model
 
 ### 🆓 **The Local Hook**
 Core CLI is **free and open-source** — the standard tool for every Midnight developer.
 
-### 💎 **The Enterprise Engine**
+### The Enterprise Engine
 Premium CI/CD subscriptions for teams:
 - Automated circuit optimization in pull requests
 - DUST cost budgets and alerts
@@ -364,7 +364,7 @@ Premium CI/CD subscriptions for teams:
 
 ---
 
-## 🏗️ How It Works
+## How It Works
 
 ### ZKIR Reverse Engineering
 
@@ -397,28 +397,28 @@ See `arch.md` and `framing.md` for the full technical deep-dive.
 
 ## Features
 
-✅ **Environment Diagnostics**
+**Environment Diagnostics**
 - Docker daemon health check
 - Port conflict detection (6300, 8088, 9944)
 - Network connectivity validation (preprod/preview)
 - Wallet balance checking via indexer queries
 
-✅ **Version Management**
+**Version Management**
 - SDK/Docker compatibility validation
 - Auto-fix for version mismatches
 - Official compatibility matrix tracking
 
-✅ **Static Analysis**
+**Static Analysis**
 - Compact linting (pragma, disclose, constructors)
 - Pre-compilation error detection
 
-✅ **ZK Circuit Analysis**
+**ZK Circuit Analysis**
 - DUST cost estimation with breakdown
 - Gate weight profiling with flamegraphs
 - Optimization opportunity detection
 - Proof time estimation
 
-✅ **Debugging & Observability**
+**Debugging & Observability**
 - Live proof failure monitoring
 - ZKIR-to-source trace mapping
 - Private state decryption
@@ -452,40 +452,40 @@ npm run lint
 
 ---
 
-## 🏆 Why Midnight Medic?
+## Why Midnight Medic?
 
 **Build Blind No More.**
 
 Midnight Medic is the devtool that makes Zero-Knowledge development **visible**, **predictable**, and **fast**.
 
-- 🔬 **Reverse-engineered ZKIR** for X-ray vision into compiled circuits
-- 💰 **DUST cost prediction** before you spend a single token
-- 🔍 **Private state decryption** for localhost debugging
-- 🩹 **Auto-healing environment** that fixes itself
-- ⚡ **4-hour bugs → 4-minute fixes** with source-mapped traces
+- **Reverse-engineered ZKIR** for X-ray vision into compiled circuits
+- **DUST cost prediction** before you spend a single token
+- **Private state decryption** for localhost debugging
+- **Auto-healing environment** that fixes itself
+- **4-hour bugs → 4-minute fixes** with source-mapped traces
 
 ---
 
-## 📚 Documentation
+## Documentation
 
 - [Architecture Deep-Dive](./arch.md) — How we reverse-engineered ZKIR
 - [Technical Framing](./framing.md) — The story behind the black box
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 Contributions welcome! This project was built for the Midnight hackathon and battle-tested with real production contracts.
 
 ---
 
-## 📄 License
+## License
 
 MIT
 
 ---
 
-## 🏷️ Tags
+## Tags
 
 `midnight-medic` `compact` `midnight-network` `zero-knowledge` `zkir` `dust` `devtools` `debugging` `blockchain` `privacy`
 
@@ -493,7 +493,7 @@ MIT
 
 <div align="center">
 
-**Built with ❤️ for the Midnight Network community**
+**Built for the Midnight Network community**
 
 [Report Bug](https://github.com/yourusername/midnight-medic/issues) • [Request Feature](https://github.com/yourusername/midnight-medic/issues)
 
